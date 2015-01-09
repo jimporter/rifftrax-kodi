@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.rifftrax"
+       name="RiffTrax"
+       version="0.0.1"
+       provider-name="Jim">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en">RiffTrax video plugin</summary>
+    <description lang="en">From the stars of Mystery Science Theater 3000 comes    RiffTrax, hilarious audio commentaries for your favorite - and not-so-favorite - movies!</description>
+    <language>en</language>
+    <license>BSD 3-clause</license>
+    <forum></forum>
+    <website></website>
+    <source></source>
+    <email></email>
+  </extension>
+</addon>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <setting id="include_local" type="bool" default="false"
+           label="Include Downloaded Riffs" />
+  <setting id="local_folder" type="folder" visible="eq(-1,true)"
+           label="Riffs Folder" />
+</settings>

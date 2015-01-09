@@ -1,0 +1,16 @@
+XBMC_PROFILE?=$(HOME)/.xbmc
+ADDON_NAME=plugin.video.rifftrax
+ADDON_VERSION=0.0.1
+ADDON_INSTALL_DIR=$(XBMC_PROFILE)/addons/$(ADDON_NAME)
+
+.PHONY: uninstall-dev
+uninstall-dev:
+	rm -rf $(ADDON_INSTALL_DIR)
+
+.PHONY: install-dev
+install-dev: uninstall-dev
+	cp -R $(ADDON_NAME) $(ADDON_INSTALL_DIR)
+
+.PHONY: package
+package:
+	zip -r $(ADDON_NAME)-$(ADDON_VERSION).zip $(ADDON_NAME)
