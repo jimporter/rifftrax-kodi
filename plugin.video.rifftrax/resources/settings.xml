@@ -4,4 +4,10 @@
            label="Include Downloaded Riffs" />
   <setting id="local_folder" type="folder" visible="eq(-1,true)"
            label="Riffs Folder" />
+  <setting type="action"
+           action="RunScript(plugin.video.rifftrax, 0, mode=refreshdb)"
+           label="Update Database" />
+  <setting type="action"
+           action="RunScript(plugin.video.rifftrax, 0, mode=cleardb)"
+           label="Delete Database" />
 </settings>
