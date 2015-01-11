@@ -1,6 +1,7 @@
 from resources.lib.requesthandler import RequestHandler
 from resources.lib.riffdb import RiffDB
 from resources.lib.rifftrax import RiffTrax
+from resources.lib.videodb import VideoDB
 from urllib import urlencode
 from collections import OrderedDict
 
@@ -114,6 +115,7 @@ def videos(feature_type):
     if my_addon.getSetting('update_library') == '1':
         refresh_db()
 
+    videodb = VideoDB()
     sort_methods = [
         2,  # SORT_METHOD_LABEL_IGNORE_THE
         3,  # SORT_METHOD_DATE
@@ -126,6 +128,7 @@ def videos(feature_type):
 
     for info in riffdb.iterate(feature_type):
         li = xbmcgui.ListItem(info['title'])
+        li.setProperty('IsPlayable', 'true')
         li.setInfo('video', infoLabels={
             'title': info['title'],
             'plot': info['summary'],
@@ -146,6 +149,33 @@ def videos(feature_type):
                 'title': info['title'],
             }) + ')')
         ])
+
+        fileid = videodb.get_file_id(info['filename'])
+
+        # Try to get the play count and last played time.
+        playback_info = videodb.get_playback_info(fileid)
+        if playback_info:
+            li.setInfo('video', infoLabels={
+                'playcount': playback_info['playcount'],
+                'lastplayed': playback_info['lastplayed']
+            })
+
+        # Try to get the bookmark for resuming the video. Note: XBMC mostly
+        # handles this automatically, but we need to do it manually to get the
+        # "resume playback" icon in the list.
+        bookmark = videodb.get_bookmark(fileid)
+        if bookmark:
+            li.setProperty('TotalTime', str(bookmark['totaltime']))
+            li.setProperty('ResumeTime', str(bookmark['resumetime']))
+
+        # Try to get the stream details. If we don't have them, at least fill in
+        # the duration.
+        stream_details = videodb.get_stream_details(fileid)
+        if stream_details and 'video' in stream_details:
+            li.addStreamInfo('video', stream_details['video'])
+        if stream_details and 'audio' in stream_details:
+            li.addStreamInfo('audio', stream_details['audio'])
+
         xbmcplugin.addDirectoryItem(handle=addon_id, url=info['filename'],
                                     listitem=li, isFolder=False)
     xbmcplugin.endOfDirectory(addon_id)
@@ -198,6 +228,7 @@ def refresh_db(explicit=False):
             str(e)
         )
         traceback.print_exc()
+
 
 @handler.page
 def clean_db():
