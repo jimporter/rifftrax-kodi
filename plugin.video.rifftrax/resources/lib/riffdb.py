@@ -49,6 +49,12 @@ class RiffDB(object):
         )
         self._conn.commit()
 
+    def remove(self, filename):
+        self._cursor.execute(
+            'DELETE FROM riffs WHERE filename=?', (filename,)
+        )
+        self._conn.commit()
+
     def clear(self):
         self._cursor.execute('DROP TABLE riffs')
         self._conn.commit()

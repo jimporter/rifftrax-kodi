@@ -8,12 +8,15 @@ SEARCH_FORMAT = 'http://www.rifftrax.com/search/catalog/"{}"/type/video'
 
 class RiffTrax(object):
     def video_search(self, query):
-        url = SEARCH_FORMAT.format(urllib.quote(query, ''))
+        url = SEARCH_FORMAT.format(urllib.quote_plus(query))
         soup = BeautifulSoup(urllib2.urlopen(url))
-        results = (soup.find('ol', class_='search-results')
-                       .find_all('span', class_='product-link'))
-        return [{'title': i.a.get_text(), 'url': i.a['href']}
-                for i in results]
+        try:
+            results = (soup.find('ol', class_='search-results')
+                           .find_all('span', class_='product-link'))
+            return [{'title': i.a.get_text(), 'url': i.a['href']}
+                    for i in results]
+        except:
+            return []
 
     def video_info(self, url):
         soup = BeautifulSoup(urllib2.urlopen(url))

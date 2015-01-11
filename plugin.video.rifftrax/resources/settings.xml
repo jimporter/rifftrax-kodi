@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-  <setting id="include_local" type="bool" default="false"
-           label="Include Downloaded Riffs" />
-  <setting id="local_folder" type="folder" visible="eq(-1,true)"
-           label="Riffs Folder" />
-  <setting type="action"
-           action="RunScript(plugin.video.rifftrax, 0, mode=refreshdb)"
-           label="Update Database" />
-  <setting type="action"
-           action="RunScript(plugin.video.rifftrax, 0, mode=cleardb)"
-           label="Delete Database" />
+  <category label="General">
+    <setting id="include_local" type="bool" default="false"
+             label="Include Downloaded Riffs" />
+    <setting id="local_folder" type="folder" visible="eq(-1,true)"
+             label="Riffs Folder" />
+  </category>
+  <category label="Library">
+    <setting id="update_library" type="enum" default="0"
+             label="Automatically Update Library"
+             values="Never|Always|On Main Index" />
+    <setting type="sep" />
+    <setting type="action"
+             action="RunScript(plugin.video.rifftrax, 0, mode=refresh_db)"
+             label="Update Library" />
+    <setting type="action"
+             action="RunScript(plugin.video.rifftrax, 0, mode=clean_db)"
+             label="Clean Library" />
+    <setting type="action"
+             action="RunScript(plugin.video.rifftrax, 0, mode=delete_db)"
+             label="Delete Library" />
+  </category>
 </settings>
