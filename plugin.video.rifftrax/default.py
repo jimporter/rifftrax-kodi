@@ -76,8 +76,9 @@ def index():
         refresh_db()
 
     context = [
-        ('Refresh library', 'RunScript(plugin.video.rifftrax, 0, ' + urlencode({
+        ('Refresh library', 'RunPlugin(' + handler.build_url({
             'mode': 'refresh_db',
+            'explicit': 'true',
         }) + ')')
     ]
 
@@ -130,7 +131,7 @@ def videos(feature_type):
             'rating': info['rating'],
         })
         li.addContextMenuItems([
-            ('Refresh', 'RunScript(plugin.video.rifftrax, 0, ' + urlencode({
+            ('Refresh', 'RunPlugin(' + handler.build_url({
                 'mode': 'refresh',
                 'filename': info['filename'],
                 'title': info['title'],
@@ -152,29 +153,35 @@ def refresh(filename, title):
     xbmc.executebuiltin('Container.Refresh')
 
 @handler.page
-def refresh_db():
+def refresh_db(explicit=False):
+    explicit = bool(explicit)
     progress = xbmcgui.DialogProgress()
-    progress.create('Scanning', 'Getting local file list...')
 
     try:
+        if explicit:
+            progress.create('Scanning', 'Getting local file list...')
         filelist = get_local_files()
-        for i, f in enumerate(filelist):
+        new_files = filter(lambda f: not riffdb.has(f['file']), filelist)
+
+        if len(new_files) and not explicit:
+            progress.create('Scanning')
+        for i, f in enumerate(new_files):
             if progress.iscanceled():
                 break
             progress.update(
-                100*i / len(filelist), 'Fetching info...', f['label']
+                100*i / len(new_files), 'Fetching info...', f['label']
             )
-            if not riffdb.has(f['file']):
-                title = re.sub(r'\.[^.]*$', '', f['label'])
-                refresh_video(f['file'], title)
+            title = re.sub(r'\.[^.]*$', '', f['label'])
+            refresh_video(f['file'], title)
+
+        progress.close()
     except Exception, e:
+        progress.close()
         xbmcgui.Dialog().ok(
             'Error refreshing database',
             'We received the following error:',
             str(e)
         )
-
-    progress.close()
 
 @handler.page
 def clean_db():

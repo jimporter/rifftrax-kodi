@@ -12,13 +12,13 @@
              values="Never|Always|On Main Index" />
     <setting type="sep" />
     <setting type="action"
-             action="RunScript(plugin.video.rifftrax, 0, mode=refresh_db)"
+             action="RunPlugin(plugin://plugin.video.rifftrax?mode=refresh_db&amp;explicit=true)"
              label="Update Library" />
     <setting type="action"
-             action="RunScript(plugin.video.rifftrax, 0, mode=clean_db)"
+             action="RunPlugin(plugin://plugin.video.rifftrax?mode=clean_db)"
              label="Clean Library" />
     <setting type="action"
-             action="RunScript(plugin.video.rifftrax, 0, mode=delete_db)"
+             action="RunPlugin(plugin://plugin.video.rifftrax?mode=delete_db)"
              label="Delete Library" />
   </category>
 </settings>
