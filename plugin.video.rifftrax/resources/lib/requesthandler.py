@@ -60,4 +60,4 @@ class RequestHandler(object):
         elif mode in self._mode_mapping:
             self._mode_mapping[mode](**params)
         else:
-            raise Exception("unknown mode: " + mode)
+            raise Exception('unknown mode: ' + mode)
