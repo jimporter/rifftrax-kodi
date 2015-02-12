@@ -23,9 +23,12 @@ class RiffTrax(object):
         title = soup.find(id='page-title').get_text()
 
         feature_type = 'short'
-        formats = (soup.find('div', class_='view-content')
+        formats = (soup.find('div', class_='view-commerce-files-in-product')
+                       .find('div', class_='view-content')
                        .find_all('div', class_='field-commerce-file'))
+        print soup.find('div', class_='view-content')
         for f in formats:
+            print f.get_text()
             if re.search('(Download to Burn|Burnable DVD Image)', f.get_text()):
                 feature_type = 'feature'
                 break
@@ -33,12 +36,17 @@ class RiffTrax(object):
         summary = soup.find('div', class_='field-description').get_text()
         poster = soup.find('div', class_='field-poster').find('a')['href']
         rating = float(soup.find('span', id='riffmeter-average').get_text())
-        date = time.strptime(
-            soup.find('span', class_='date-display-single').get_text(),
-            '%A, %B %d, %Y'
+        date = self._parse_time(
+            soup.find('span', class_='date-display-single').get_text()
         )
 
         return {
             'title': title, 'url': url, 'feature_type': feature_type,
             'poster': poster, 'summary': summary, 'date': date, 'rating': rating
         }
+
+    def _parse_time(self, t):
+        try:
+            return time.strptime(t, '%A, %B %d, %Y')
+        except:
+            return time.strptime(t, '%B %d, %Y')
