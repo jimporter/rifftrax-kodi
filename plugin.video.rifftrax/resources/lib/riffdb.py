@@ -40,6 +40,16 @@ class RiffDB(object):
                 return
             yield dict(zip(RiffDB.keys, row))
 
+    def count(self, feature_type=None):
+        if feature_type:
+            self._cursor.execute(
+                'SELECT COUNT(*) FROM riffs WHERE feature_type=?',
+                (feature_type,)
+            )
+        else:
+            self._cursor.execute('SELECT COUNT(*) FROM riffs')
+        return self._cursor.fetchone()[0]
+
     def insert(self, filename, **info):
         self._cursor.execute(
             'INSERT INTO riffs VALUES (?,?,?,?,?,?,?,?)',

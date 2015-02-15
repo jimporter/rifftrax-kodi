@@ -32,6 +32,8 @@ class RiffTrax(object):
             if re.search('(Download to Burn|Burnable DVD Image)', f.get_text()):
                 feature_type = 'feature'
                 break
+        if re.match(r'RiffTrax Live:', title):
+            feature_type = 'live'
 
         summary = soup.find('div', class_='field-description').get_text()
         poster = soup.find('div', class_='field-poster').find('a')['href']

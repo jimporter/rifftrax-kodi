@@ -2,6 +2,7 @@ from resources.lib.requesthandler import RequestHandler
 from resources.lib.riffdb import RiffDB
 from resources.lib.rifftrax import RiffTrax
 from urllib import urlencode
+from collections import OrderedDict
 
 import json
 import os.path
@@ -82,27 +83,19 @@ def index():
         }) + ')')
     ]
 
-    url = handler.build_url({ 'mode': 'videos', 'feature_type': 'feature' })
-    li = xbmcgui.ListItem('Features', iconImage='DefaultFolder.png')
-    li.addContextMenuItems(context)
-    xbmcplugin.addDirectoryItem(handle=addon_id, url=url, listitem=li,
-                                isFolder=True)
-
-    url = handler.build_url({ 'mode': 'videos', 'feature_type': 'short' })
-    li = xbmcgui.ListItem('Shorts', iconImage='DefaultFolder.png')
-    li.addContextMenuItems(context)
-    xbmcplugin.addDirectoryItem(handle=addon_id, url=url, listitem=li,
-                                isFolder=True)
-
-    try:
-        riffdb.iterate('unknown').next()
-        url = handler.build_url({ 'mode': 'videos', 'feature_type': 'unknown' })
-        li = xbmcgui.ListItem('Unknown Videos', iconImage='DefaultFolder.png')
-        li.addContextMenuItems(context)
-        xbmcplugin.addDirectoryItem(handle=addon_id, url=url, listitem=li,
-                                    isFolder=True)
-    except StopIteration:
-        pass
+    titles = OrderedDict([
+        ('unknown', 'Unknown Videos'),
+        ('feature', 'Features'),
+        ('short',   'Shorts'),
+        ('live',    'Live'),
+    ])
+    for kind, title in titles.iteritems():
+        if riffdb.count(kind):
+            url = handler.build_url({ 'mode': 'videos', 'feature_type': kind })
+            li = xbmcgui.ListItem(title, iconImage='DefaultFolder.png')
+            li.addContextMenuItems(context)
+            xbmcplugin.addDirectoryItem(handle=addon_id, url=url, listitem=li,
+                                        isFolder=True)
 
     xbmcplugin.endOfDirectory(addon_id)
 
