@@ -29,7 +29,7 @@ class RiffTrax(object):
         print soup.find('div', class_='view-content')
         for f in formats:
             print f.get_text()
-            if re.search('(Download to Burn|Burnable DVD Image)', f.get_text()):
+            if re.search('(Download to Burn|DVD Image)', f.get_text()):
                 feature_type = 'feature'
                 break
         if re.match(r'RiffTrax Live:', title):
