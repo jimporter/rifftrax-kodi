@@ -26,9 +26,8 @@ class RiffTrax(object):
         formats = (soup.find('div', class_='view-commerce-files-in-product')
                        .find('div', class_='view-content')
                        .find_all('div', class_='field-commerce-file'))
-        print soup.find('div', class_='view-content')
+
         for f in formats:
-            print f.get_text()
             if re.search('(Download to Burn|DVD Image)', f.get_text()):
                 feature_type = 'feature'
                 break
