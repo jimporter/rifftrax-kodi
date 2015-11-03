@@ -149,15 +149,18 @@ def refresh(filename, title):
 def refresh_db(explicit=False):
     explicit = bool(explicit)
     progress = xbmcgui.DialogProgress()
+    progress_open = False
 
     try:
         if explicit:
             progress.create('Scanning', 'Getting local file list...')
+            progress_open = True
         filelist = get_local_files()
         new_files = filter(lambda f: not riffdb.has(f['file']), filelist)
 
         if len(new_files) and not explicit:
             progress.create('Scanning')
+            progress_open = True
         for i, f in enumerate(new_files):
             if progress.iscanceled():
                 break
@@ -166,10 +169,12 @@ def refresh_db(explicit=False):
             )
             title = re.sub(r'\.[^.]*$', '', f['label'])
             refresh_video(f['file'], title)
-
-        progress.close()
+        if progress_open:
+            progress.close()
+            progress_open = False
     except Exception, e:
-        progress.close()
+        if progress_open:
+            progress.close()
         xbmcgui.Dialog().ok(
             'Error refreshing database',
             'We received the following error:',
