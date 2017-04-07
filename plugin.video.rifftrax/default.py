@@ -45,28 +45,34 @@ def get_local_files():
     return data['result'].get('files', [])
 
 def refresh_video(filename, title, prompt_results=False):
-    results = rifftrax.video_search(title)
-    if prompt_results:
-        if len(results) == 0:
-            xbmcgui.Dialog().ok(
-                'Search Results', 'Sorry, no results for "{}"'.format(title)
-            )
-            index = None
-        else:
-            index = xbmcgui.Dialog().select(
-                'Search Results', [i['title'] for i in results]
-            )
+    if title[0] == '/':
+        try:
+            info = rifftrax.video_info(title)
+        except:
+            info = None
     else:
-        if len(results) == 0:
-            index = None
-        else:
-            index = 0
+        dialog = xbmcgui.Dialog()
+        results = rifftrax.video_search(title)
 
-    if index is None:
+        if len(results) == 0:
+            if prompt_results:
+                dialog.ok('Search Results',
+                          'Sorry, no results for "{}"'.format(title))
+            info = None
+        else:
+            if prompt_results:
+                index = dialog.select('Search Results',
+                                      [i['title'] for i in results])
+                if index == -1:
+                    return
+            else:
+                index = 0
+            info = rifftrax.video_info(results[index]['url'])
+
+    if info is None:
         riffdb.insert(filename, title=title, feature_type='unknown')
         return False
     else:
-        info = rifftrax.video_info(results[index]['url'])
         info['date'] = time.strftime('%d.%m.%Y', info['date'])
         riffdb.insert(filename, **info)
         return True
@@ -136,8 +142,9 @@ def videos(feature_type):
 
 @handler.page
 def refresh(filename, title):
+    dialog = xbmcgui.Dialog()
     while True:
-        title = xbmcgui.Dialog().input('Enter Title', title)
+        title = dialog.input('Enter Title', title)
         if not title:
             return
         riffdb.remove(filename)

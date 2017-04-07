@@ -4,11 +4,12 @@ import urllib
 import urllib2
 from bs4 import BeautifulSoup
 
-SEARCH_FORMAT = 'http://www.rifftrax.com/search/catalog/"{}"/type/video'
-
 class RiffTrax(object):
+    base_url = 'http://www.rifftrax.com'
+    search_format = base_url + '/search/catalog/"{}"/type/video'
+
     def video_search(self, query):
-        url = SEARCH_FORMAT.format(urllib.quote_plus(query))
+        url = self.search_format.format(urllib.quote_plus(query))
         soup = BeautifulSoup(urllib2.urlopen(url))
         try:
             results = (soup.find('ol', class_='search-results')
@@ -19,6 +20,8 @@ class RiffTrax(object):
             return []
 
     def video_info(self, url):
+        if url[0] == '/':
+            url = self.base_url + url
         soup = BeautifulSoup(urllib2.urlopen(url))
         title = soup.find(id='page-title').get_text()
 
