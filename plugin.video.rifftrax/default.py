@@ -121,14 +121,20 @@ def videos(feature_type):
         xbmcplugin.addSortMethod(addon_id, i)
 
     for info in riffdb.iterate(feature_type):
-        li = xbmcgui.ListItem(info['title'], iconImage='DefaultVideo.png',
-                              thumbnailImage=info['poster'])
+        li = xbmcgui.ListItem(info['title'])
         li.setInfo('video', infoLabels={
             'title': info['title'],
             'plot': info['summary'],
             'date': info['date'],
             'rating': info['rating'],
         })
+
+        li.setArt({
+            'icon': 'DefaultVideo.png',
+            'poster': info['poster'],
+            'thumb': info['poster'],
+        })
+
         li.addContextMenuItems([
             ('Refresh', 'RunPlugin(' + handler.build_url({
                 'mode': 'refresh',
