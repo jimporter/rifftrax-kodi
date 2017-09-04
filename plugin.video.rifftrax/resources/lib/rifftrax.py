@@ -5,7 +5,7 @@ import urllib2
 from bs4 import BeautifulSoup
 
 class RiffTrax(object):
-    base_url = 'http://www.rifftrax.com'
+    base_url = 'https://www.rifftrax.com'
     search_format = base_url + '/search/catalog/"{}"/type/video'
 
     def video_search(self, query):
@@ -23,7 +23,7 @@ class RiffTrax(object):
         if url[0] == '/':
             url = self.base_url + url
         soup = BeautifulSoup(urllib2.urlopen(url))
-        title = soup.find(id='page-title').get_text()
+        title = soup.find('h1', class_='page-header').get_text()
 
         feature_type = 'short'
         formats = (soup.find('div', class_='view-commerce-files-in-product')
@@ -38,8 +38,10 @@ class RiffTrax(object):
             feature_type = 'live'
 
         summary = soup.find('div', class_='field-description').get_text()
-        poster = soup.find('div', class_='field-poster').find('a')['href']
-        rating = float(soup.find('span', id='riffmeter-average').get_text())
+        poster = (soup.find('div', class_='pane-commerce-product-field-poster')
+                      .find('a')['href'])
+        rating = float(soup.find('span', class_='average-rating').find('span')
+                           .get_text())
         date = self._parse_time(
             soup.find('span', class_='date-display-single').get_text()
         )

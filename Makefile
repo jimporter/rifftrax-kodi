@@ -16,3 +16,8 @@ package:
 	find . -name "*.pyc" -exec rm {} \;
 	rm -f $(ADDON_NAME)-$(ADDON_VERSION).zip
 	zip -r $(ADDON_NAME)-$(ADDON_VERSION).zip $(ADDON_NAME)
+
+.PHONY: test
+test:
+	PYTHONPATH=$(PWD)/$(ADDON_NAME):$(PYTHONPATH) \
+	python -m unittest discover test
