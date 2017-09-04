@@ -27,4 +27,9 @@ class TestScraping(unittest.TestCase):
                          'styles/preview_image/public/posters/video/' +
                          'FutureForce_Web.jpg?itok=JB5ISqNB')
         self.assertEqual(data['rating'], 9.2)
+        self.assertEqual(data['cast'], [
+            u'Bill Corbett',
+            u'Kevin Murphy',
+            u'Mike Nelson'
+        ])
         self.assertTrue('David Carradine' in data['summary'])

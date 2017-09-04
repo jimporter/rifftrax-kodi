@@ -46,9 +46,13 @@ class RiffTrax(object):
             soup.find('span', class_='date-display-single').get_text()
         )
 
+        cast_nodes = soup.find('div', class_='view-riffers').find_all('span')
+        cast = [i.get_text().strip() for i in cast_nodes]
+
         return {
             'title': title, 'url': url, 'feature_type': feature_type,
-            'poster': poster, 'summary': summary, 'date': date, 'rating': rating
+            'poster': poster, 'summary': summary, 'cast': cast, 'date': date,
+            'rating': rating
         }
 
     def _parse_time(self, t):
