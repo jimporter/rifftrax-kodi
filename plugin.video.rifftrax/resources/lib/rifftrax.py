@@ -38,8 +38,11 @@ class RiffTrax(object):
             feature_type = 'live'
 
         summary = soup.find('div', class_='field-description').get_text()
-        poster = (soup.find('div', class_='pane-commerce-product-field-poster')
-                      .find('a')['href'])
+        poster_container = (
+            soup.find('div', class_='pane-node-field-poster') or
+            soup.find('div', class_='pane-commerce-product-field-poster')
+        )
+        poster = poster_container.find('a')['href']
         rating = float(soup.find('span', class_='average-rating').find('span')
                            .get_text())
         date = self._parse_time(
