@@ -8,6 +8,7 @@ import json
 import os.path
 import re
 import time
+import traceback
 import xbmc
 import xbmcaddon
 import xbmcplugin
@@ -185,7 +186,7 @@ def refresh_db(explicit=False):
         if progress_open:
             progress.close()
             progress_open = False
-    except Exception, e:
+    except Exception as e:
         if progress_open:
             progress.close()
         xbmcgui.Dialog().ok(
@@ -193,6 +194,7 @@ def refresh_db(explicit=False):
             'We received the following error:',
             str(e)
         )
+        traceback.print_exc()
 
 @handler.page
 def clean_db():
