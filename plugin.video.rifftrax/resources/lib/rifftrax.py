@@ -10,7 +10,7 @@ class RiffTrax(object):
 
     def video_search(self, query):
         url = self.search_format.format(urllib.quote_plus(query))
-        soup = BeautifulSoup(urllib2.urlopen(url))
+        soup = BeautifulSoup(urllib2.urlopen(url), 'html.parser')
         try:
             results = (soup.find('ol', class_='search-results')
                            .find_all('span', class_='product-link'))
@@ -22,7 +22,7 @@ class RiffTrax(object):
     def video_info(self, url):
         if url[0] == '/':
             url = self.base_url + url
-        soup = BeautifulSoup(urllib2.urlopen(url))
+        soup = BeautifulSoup(urllib2.urlopen(url), 'html.parser')
         title = soup.find('h1', class_='page-header').get_text()
 
         feature_type = 'short'
