@@ -23,7 +23,7 @@ class TestScraping(unittest.TestCase):
         self.assertEqual(data['feature_type'], 'feature')
         self.assertEqual(data['date'], time.strptime('2012-7-27', '%Y-%m-%d'))
         self.assertEqual(data['poster'],
-                         'https://static.rifftrax.com/sites/default/files/' +
+                         'https://www.rifftrax.com/sites/default/files/' +
                          'posters/video/FutureForce_Web.jpg')
         self.assertEqual(data['rating'], 9.2)
         self.assertTrue('David Carradine' in data['summary'])

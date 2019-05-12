@@ -6,15 +6,17 @@ from bs4 import BeautifulSoup
 
 class RiffTrax(object):
     base_url = 'https://www.rifftrax.com'
-    search_format = base_url + '/search/catalog/"{}"/type/video'
+    search_format = base_url + '/catalog/media-type/video?search="{}"'
 
     def video_search(self, query):
         url = self.search_format.format(urllib.quote_plus(query))
         soup = BeautifulSoup(urllib2.urlopen(url), 'html.parser')
         try:
-            results = (soup.find('ol', class_='search-results')
-                           .find_all('span', class_='product-link'))
-            return [{'title': i.a.get_text(), 'url': i.a['href']}
+            results = (soup.find('section', id='block-system-main')
+                           .find('div', class_='view-content')
+                           .find_all('div', class_='product-grid'))
+            return [{'title': i.get_text().strip(),
+                     'url': self.base_url + i.a['href']}
                     for i in results]
         except:
             return []
