@@ -91,13 +91,14 @@ def index():
     ]
 
     titles = OrderedDict([
+        ('all',     'All Videos'),
         ('unknown', 'Unknown Videos'),
         ('feature', 'Features'),
         ('short',   'Shorts'),
         ('live',    'Live'),
     ])
     for kind, title in titles.iteritems():
-        if riffdb.count(kind):
+        if kind == 'all' or riffdb.count(kind):
             url = handler.build_url({ 'mode': 'videos', 'feature_type': kind })
             li = xbmcgui.ListItem(title, iconImage='DefaultFolder.png')
             li.addContextMenuItems(context)
@@ -108,6 +109,8 @@ def index():
 
 @handler.page
 def videos(feature_type):
+    if feature_type == 'all':
+        feature_type = None
     if my_addon.getSetting('update_library') == '1':
         refresh_db()
 
