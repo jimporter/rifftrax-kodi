@@ -3,8 +3,8 @@ import unittest
 
 from resources.lib.rifftrax import RiffTrax
 
-class TestScraping(unittest.TestCase):
 
+class TestScraping(unittest.TestCase):
     def setUp(self):
         self.riff = RiffTrax()
 
@@ -24,6 +24,6 @@ class TestScraping(unittest.TestCase):
         self.assertEqual(data['date'], time.strptime('2012-7-27', '%Y-%m-%d'))
         self.assertEqual(data['poster'],
                          'https://www.rifftrax.com/sites/default/files/' +
-                         'posters/video/FutureForce_Web.jpg')
+                         'images/posters/FutureForce_Web.jpg')
         self.assertEqual(data['rating'], 9.2)
         self.assertTrue('David Carradine' in data['summary'])

@@ -1,10 +1,10 @@
 import sqlite3
 
-class RiffDB(object):
-    keys = [
-        'filename', 'title', 'url', 'feature_type', 'poster', 'summary', 'date',
-        'rating'
-    ]
+
+class RiffDB:
+    keys = ['filename', 'title', 'url', 'feature_type', 'poster', 'summary',
+            'date', 'rating']
+
     def __init__(self, path):
         self._conn = sqlite3.connect(path)
         self._cursor = self._conn.cursor()

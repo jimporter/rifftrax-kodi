@@ -1,8 +1,8 @@
 import re
-import urllib
-import urlparse
+from urllib.parse import urlencode, parse_qsl as url_parse_qsl
 
-class RequestHandler(object):
+
+class RequestHandler:
     """A simple handler for requests against this plugin. To register handlers,
     use the handler and default_handler decorators."""
 
@@ -11,7 +11,6 @@ class RequestHandler(object):
 
         :param base_url: The base URL of the add-on (usually sys.argv[0])
         """
-
         self._base_url = base_url
         self._mode_mapping = {}
         self._default_mode_mapping = None
@@ -23,7 +22,6 @@ class RequestHandler(object):
         :param fn: The function to decorate
         :return: The decorated function
         """
-
         self._mode_mapping[fn.__name__] = fn
         return fn
 
@@ -34,7 +32,6 @@ class RequestHandler(object):
         :param fn: The function to decorate
         :return: The decorated function
         """
-
         self._default_mode_mapping = fn
         return self.page(fn)
 
@@ -42,18 +39,18 @@ class RequestHandler(object):
         """Build a URL to refer back to this add-on.
 
         :param query: A dict of the query arguments for the URL
-        :return: The built URL"""
-
-        return self._base_url + '?' + urllib.urlencode(query)
+        :return: The built URL
+        """
+        return self._base_url + '?' + urlencode(query)
 
     def run(self, arguments):
         """Run the request handler and dispatch to the appropiate handler
         function, as registered by RequestHandler.handler or
         RequestHandler.default_handler.
 
-        :param arguments: The arguments to the add-on (usually sys.argv[2])"""
-
-        params = dict(urlparse.parse_qsl( re.sub(r'^\?', '', arguments) ))
+        :param arguments: The arguments to the add-on (usually sys.argv[2])
+        """
+        params = dict(url_parse_qsl( re.sub(r'^\?', '', arguments) ))
         mode = params.pop('mode', None)
         if mode is None:
             self._default_mode_mapping(**params)

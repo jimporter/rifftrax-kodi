@@ -1,34 +1,37 @@
 from resources.lib.requesthandler import RequestHandler
 from resources.lib.riffdb import RiffDB
 from resources.lib.rifftrax import RiffTrax
-from urllib import urlencode
 from collections import OrderedDict
 
 import json
 import os.path
 import re
+import sys
 import time
 import traceback
 import xbmc
 import xbmcaddon
-import xbmcplugin
 import xbmcgui
+import xbmcplugin
 import xbmcvfs
+
 
 addon_id = int(sys.argv[1])
 my_addon = xbmcaddon.Addon('plugin.video.rifftrax')
 
 handler = RequestHandler(sys.argv[0])
 riffdb = RiffDB(os.path.join(
-    xbmc.translatePath(my_addon.getAddonInfo('profile')),
+    xbmcvfs.translatePath(my_addon.getAddonInfo('profile')),
     'riffdb.sqlite'
 ))
 rifftrax = RiffTrax()
 
 xbmcplugin.setContent(addon_id, 'movies')
 
+
 def jsonrpc(query):
     return json.loads(xbmc.executeJSONRPC(json.dumps(query)))
+
 
 def get_local_files():
     if my_addon.getSetting('include_local') != 'true':
@@ -45,11 +48,12 @@ def get_local_files():
 
     return data['result'].get('files', [])
 
+
 def refresh_video(filename, title, prompt_results=False):
     if title[0] == '/':
         try:
             info = rifftrax.video_info(title)
-        except:
+        except Exception:
             info = None
     else:
         dialog = xbmcgui.Dialog()
@@ -78,6 +82,7 @@ def refresh_video(filename, title, prompt_results=False):
         riffdb.insert(filename, **info)
         return True
 
+
 @handler.default_page
 def index():
     if my_addon.getSetting('update_library') != '0':
@@ -97,15 +102,17 @@ def index():
         ('short',   'Shorts'),
         ('live',    'Live'),
     ])
-    for kind, title in titles.iteritems():
+    for kind, title in titles.items():
         if kind == 'all' or riffdb.count(kind):
             url = handler.build_url({ 'mode': 'videos', 'feature_type': kind })
-            li = xbmcgui.ListItem(title, iconImage='DefaultFolder.png')
+            li = xbmcgui.ListItem(title)
+            li.setArt({'icon': 'DefaultFolder.png'})
             li.addContextMenuItems(context)
             xbmcplugin.addDirectoryItem(handle=addon_id, url=url, listitem=li,
                                         isFolder=True)
 
     xbmcplugin.endOfDirectory(addon_id)
+
 
 @handler.page
 def videos(feature_type):
@@ -115,11 +122,11 @@ def videos(feature_type):
         refresh_db()
 
     sort_methods = [
-        2,  # SORT_METHOD_LABEL_IGNORE_THE
-        3,  # SORT_METHOD_DATE
-        8,  # SORT_METHOD_DURATION
-        18, # SORT_METHOD_VIDEO_RATING
-        19, # SORT_METHOD_DATE_ADDED
+        2,   # SORT_METHOD_LABEL_IGNORE_THE
+        3,   # SORT_METHOD_DATE
+        8,   # SORT_METHOD_DURATION
+        18,  # SORT_METHOD_VIDEO_RATING
+        19,  # SORT_METHOD_DATE_ADDED
     ]
     for i in sort_methods:
         xbmcplugin.addSortMethod(addon_id, i)
@@ -150,6 +157,7 @@ def videos(feature_type):
                                     listitem=li, isFolder=False)
     xbmcplugin.endOfDirectory(addon_id)
 
+
 @handler.page
 def refresh(filename, title):
     dialog = xbmcgui.Dialog()
@@ -162,6 +170,7 @@ def refresh(filename, title):
             break
     xbmc.executebuiltin('Container.Refresh')
 
+
 @handler.page
 def refresh_db(explicit=False):
     explicit = bool(explicit)
@@ -173,7 +182,7 @@ def refresh_db(explicit=False):
             progress.create('Scanning', 'Getting local file list...')
             progress_open = True
         filelist = get_local_files()
-        new_files = filter(lambda f: not riffdb.has(f['file']), filelist)
+        new_files = [i for i in filelist if not riffdb.has(i['file'])]
 
         if len(new_files) and not explicit:
             progress.create('Scanning')
@@ -194,17 +203,17 @@ def refresh_db(explicit=False):
             progress.close()
         xbmcgui.Dialog().ok(
             'Error refreshing database',
-            'We received the following error:',
-            str(e)
+            'We received the following error:\n{}'.format(str(e))
         )
         traceback.print_exc()
+
 
 @handler.page
 def clean_db():
     yes = xbmcgui.Dialog().yesno(
         'Clean Riffs Library',
-        'Are you sure you want to clean the Riffs library?',
-        'This cannot be undone!'
+        ('Are you sure you want to clean the Riffs library?\n' +
+         'This cannot be undone!')
     )
     if not yes:
         return
@@ -214,14 +223,16 @@ def clean_db():
         if info['filename'] not in filelist:
             riffdb.remove(info['filename'])
 
+
 @handler.page
 def delete_db():
     yes = xbmcgui.Dialog().yesno(
         'Delete Riffs Library',
-        'Are you sure you want to delete the Riffs library?',
-        'This cannot be undone!'
+        ('Are you sure you want to delete the Riffs library?\n' +
+         'This cannot be undone!')
     )
     if yes:
         riffdb.clear()
+
 
 handler.run(sys.argv[2])

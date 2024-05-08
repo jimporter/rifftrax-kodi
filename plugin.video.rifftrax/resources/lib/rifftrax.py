@@ -1,16 +1,17 @@
 import re
 import time
-import urllib
-import urllib2
 from bs4 import BeautifulSoup
+from urllib.parse import quote_plus as url_quote_plus
+from urllib.request import urlopen
 
-class RiffTrax(object):
+
+class RiffTrax:
     base_url = 'https://www.rifftrax.com'
     search_format = base_url + '/catalog/media-type/video?search="{}"'
 
     def video_search(self, query):
-        url = self.search_format.format(urllib.quote_plus(query))
-        soup = BeautifulSoup(urllib2.urlopen(url), 'html.parser')
+        url = self.search_format.format(url_quote_plus(query))
+        soup = BeautifulSoup(urlopen(url), 'html.parser')
         try:
             results = (soup.find('section', id='block-system-main')
                            .find('div', class_='view-content')
@@ -18,13 +19,13 @@ class RiffTrax(object):
             return [{'title': i.get_text().strip(),
                      'url': self.base_url + i.a['href']}
                     for i in results]
-        except:
+        except Exception:
             return []
 
     def video_info(self, url):
         if url[0] == '/':
             url = self.base_url + url
-        soup = BeautifulSoup(urllib2.urlopen(url), 'html.parser')
+        soup = BeautifulSoup(urlopen(url), 'html.parser')
         title = soup.find('h1', class_='page-header').get_text()
 
         feature_type = 'short'
@@ -53,11 +54,12 @@ class RiffTrax(object):
 
         return {
             'title': title, 'url': url, 'feature_type': feature_type,
-            'poster': poster, 'summary': summary, 'date': date, 'rating': rating
+            'poster': poster, 'summary': summary, 'date': date,
+            'rating': rating,
         }
 
     def _parse_time(self, t):
         try:
             return time.strptime(t, '%A, %B %d, %Y')
-        except:
+        except Exception:
             return time.strptime(t, '%B %d, %Y')
