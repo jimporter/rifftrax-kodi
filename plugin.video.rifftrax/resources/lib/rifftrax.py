@@ -1,56 +1,53 @@
+import json
 import re
-import time
+from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus as url_quote_plus
 from urllib.request import urlopen
 
 
 class RiffTrax:
-    base_url = 'https://www.rifftrax.com'
-    search_format = base_url + '/catalog/media-type/video?search="{}"'
+    base_url = 'https://www.rifftrax.com/api/dante/'
 
     def video_search(self, query):
-        url = self.search_format.format(url_quote_plus(query))
-        soup = BeautifulSoup(urlopen(url), 'html.parser')
-        try:
-            results = (soup.find('section', id='block-system-main')
-                           .find('div', class_='view-content')
-                           .find_all('div', class_='product-grid'))
-            return [{'title': i.get_text().strip(),
-                     'url': self.base_url + i.a['href']}
-                    for i in results]
-        except Exception:
-            return []
+        tokens = [re.compile(i, flags=re.IGNORECASE)
+                  for i in re.split(r'\W+', query)]
 
-    def video_info(self, url):
-        if url[0] == '/':
-            url = self.base_url + url
-        soup = BeautifulSoup(urlopen(url), 'html.parser')
-        title = soup.find(id='page-title').get_text()
+        results = []
+        for i in self._title_list():
+            if all(t.search(i['title']) for t in tokens):
+                results.append(i)
+        return results
 
-        feature_type = 'short'
-        formats = (soup.find('div', class_='view-commerce-files-in-product')
-                       .find('div', class_='view-content')
-                       .find_all('div', class_='field-commerce-file'))
+    def video_info(self, nid):
+        api_url = self.base_url + 'product_display/{}'.format(nid)
+        data = json.load(urlopen(api_url))
 
-        for f in formats:
-            if re.search('(Download to Burn|DVD Image|NTSC)', f.get_text()):
-                feature_type = 'feature'
-                break
+        title = data['title']
+        url = data['path']
+        date = datetime.fromisoformat(data['released']).date()
+
+        source_type = data['source']['type']['tid']
         if re.match(r'RiffTrax Live:', title):
             feature_type = 'live'
+        elif source_type == 261:
+            feature_type = 'feature'
+        elif source_type == 266:
+            feature_type = 'short'
+        else:
+            raise ValueError('unrecognized type: {}'
+                             .format(data['source']['type']))
 
+        soup = BeautifulSoup(urlopen(url), 'html.parser')
         summary = soup.find('div', class_='field-description').get_text()
+        rating = float(soup.find('span', class_='average-rating').find('span')
+                           .get_text())
+
         poster_container = (
             soup.find('div', class_='pane-node-field-poster') or
             soup.find('div', class_='pane-commerce-product-field-poster')
         )
         poster = poster_container.find('a')['href']
-        rating = float(soup.find('span', class_='average-rating').find('span')
-                           .get_text())
-        date = self._parse_time(
-            soup.find('span', class_='date-display-single').get_text()
-        )
 
         return {
             'title': title, 'url': url, 'feature_type': feature_type,
@@ -58,8 +55,8 @@ class RiffTrax:
             'rating': rating,
         }
 
-    def _parse_time(self, t):
-        try:
-            return time.strptime(t, '%A, %B %d, %Y')
-        except Exception:
-            return time.strptime(t, '%B %d, %Y')
+    def _title_list(self):
+        if not hasattr(self, '_title_list_cache'):
+            url = self.base_url + 'product_search'
+            self._title_list = json.load(urlopen(url))
+        return self._title_list

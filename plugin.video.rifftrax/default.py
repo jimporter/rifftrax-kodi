@@ -72,13 +72,13 @@ def refresh_video(filename, title, prompt_results=False):
                     return
             else:
                 index = 0
-            info = rifftrax.video_info(results[index]['url'])
+            info = rifftrax.video_info(results[index]['nid'])
 
     if info is None:
         riffdb.insert(filename, title=title, feature_type='unknown')
         return False
     else:
-        info['date'] = time.strftime('%d.%m.%Y', info['date'])
+        info['date'] = info['date'].strftime('%d.%m.%Y')
         riffdb.insert(filename, **info)
         return True
 
