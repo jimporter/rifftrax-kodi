@@ -26,7 +26,7 @@ class RiffTrax:
         if url[0] == '/':
             url = self.base_url + url
         soup = BeautifulSoup(urlopen(url), 'html.parser')
-        title = soup.find('h1', class_='page-header').get_text()
+        title = soup.find(id='page-title').get_text()
 
         feature_type = 'short'
         formats = (soup.find('div', class_='view-commerce-files-in-product')
