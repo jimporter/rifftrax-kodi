@@ -2,7 +2,6 @@ import json
 import re
 from datetime import datetime
 from bs4 import BeautifulSoup
-from urllib.parse import quote_plus as url_quote_plus
 from urllib.request import urlopen
 
 

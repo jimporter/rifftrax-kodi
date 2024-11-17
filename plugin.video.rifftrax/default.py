@@ -7,7 +7,6 @@ import json
 import os.path
 import re
 import sys
-import time
 import traceback
 import xbmc
 import xbmcaddon
