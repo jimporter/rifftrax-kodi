@@ -191,7 +191,8 @@ def refresh_db(explicit=False):
             if progress.iscanceled():
                 break
             progress.update(
-                100*i / len(new_files), 'Fetching info...', f['label']
+                100*i / len(new_files),
+                'Fetching info...\n{}'.format(f['label'])
             )
             title = re.sub(r'\.[^.]*$', '', f['label'])
             refresh_video(f['file'], title)
