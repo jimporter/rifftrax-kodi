@@ -13,7 +13,7 @@ class TestScraping(unittest.TestCase):
         self.assertGreaterEqual(len(data), 1)
         self.assertEqual(data[0], {
             'url': 'https://www.rifftrax.com/future-force',
-            'title': u'Future Force'
+            'title': 'Future Force'
         })
 
     def test_info(self):
