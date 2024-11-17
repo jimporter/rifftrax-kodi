@@ -191,7 +191,7 @@ def refresh_db(explicit=False):
             if progress.iscanceled():
                 break
             progress.update(
-                100*i / len(new_files),
+                100*i // len(new_files),
                 'Fetching info...\n{}'.format(f['label'])
             )
             title = re.sub(r'\.[^.]*$', '', f['label'])
