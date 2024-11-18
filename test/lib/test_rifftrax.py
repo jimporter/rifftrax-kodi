@@ -4,7 +4,7 @@ from datetime import date
 from resources.lib.rifftrax import RiffTrax
 
 
-class TestScraping(unittest.TestCase):
+class TestRiffTrax(unittest.TestCase):
     def setUp(self):
         self.riff = RiffTrax()
 

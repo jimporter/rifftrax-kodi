@@ -18,7 +18,10 @@ class RiffDB:
         self._cursor.execute(
             'SELECT * FROM riffs WHERE filename=?', (filename,)
         )
-        return dict(zip(RiffDB.keys, self._cursor.fetchone()))
+        row = self._cursor.fetchone()
+        if row is None:
+            raise LookupError(filename)
+        return dict(zip(RiffDB.keys, row))
 
     def has(self, filename):
         self._cursor.execute(
@@ -50,13 +53,11 @@ class RiffDB:
             self._cursor.execute('SELECT COUNT(*) FROM riffs')
         return self._cursor.fetchone()[0]
 
-    def insert(self, filename, **info):
-        self._cursor.execute(
-            'INSERT INTO riffs VALUES (?,?,?,?,?,?,?,?)',
-            (filename, info.get('title'), info.get('url'),
-             info.get('feature_type'), info.get('poster'), info.get('summary'),
-             info.get('date'), info.get('rating'))
-        )
+    def insert(self, filename, *, title=None, url=None, feature_type=None,
+               poster=None, summary=None, date=None, rating=None):
+        self._cursor.execute('INSERT INTO riffs VALUES (?,?,?,?,?,?,?,?)', (
+            filename, title, url, feature_type, poster, summary, date, rating
+        ))
         self._conn.commit()
 
     def remove(self, filename):
