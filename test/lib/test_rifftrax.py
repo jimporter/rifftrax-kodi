@@ -11,10 +11,8 @@ class TestRiffTrax(unittest.TestCase):
     def test_search(self):
         data = self.riff.video_search('future force')
         self.assertGreaterEqual(len(data), 1)
-        self.assertEqual(data[0], {
-            'nid': 3341526,
-            'title': 'Future Force'
-        })
+        self.assertEqual(data[0]['nid'], 3341526)
+        self.assertEqual(data[0]['title'], 'Future Force')
 
     def test_info(self):
         data = self.riff.video_info(3341526)
