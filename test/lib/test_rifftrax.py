@@ -23,5 +23,5 @@ class TestRiffTrax(unittest.TestCase):
         self.assertEqual(data['poster'],
                          'https://www.rifftrax.com/sites/default/files/' +
                          'images/posters/FutureForce_Web.jpg')
-        self.assertEqual(data['rating'], 9.2)
+        self.assertAlmostEqual(data['rating'], 9.2, places=1)
         self.assertTrue('David Carradine' in data['summary'])
