@@ -59,5 +59,5 @@ class RiffTrax:
     def _title_list(self):
         if not hasattr(self, '_title_list_cache'):
             url = self.base_url + 'product_search'
-            self._title_list = json.load(urlopen(url))['index']
-        return self._title_list
+            self._title_list_cache = json.load(urlopen(url))['index']
+        return self._title_list_cache
