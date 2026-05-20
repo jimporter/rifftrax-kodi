@@ -24,4 +24,5 @@ class TestRiffTrax(unittest.TestCase):
                          'https://www.rifftrax.com/sites/default/files/' +
                          'images/posters/FutureForce_Web.jpg')
         self.assertAlmostEqual(data['rating'], 9.2, places=1)
-        self.assertTrue('David Carradine' in data['summary'])
+        self.assertTrue('Civilian Operated Police Incorporated'
+                        in data['summary'])
